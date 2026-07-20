@@ -1,0 +1,287 @@
+- id: tablet_kompleksowe_sterowanie
+  alias: 'Tablet: Kompleksowe Sterowanie'
+  mode: restart
+  trigger:
+  - platform: state
+    entity_id: input_number.jasnosc_tabletu
+    id: slider
+  - platform: sun
+    event: sunset
+    offset: -00:10:00
+    id: sunset_minus_40
+  - platform: sun
+    event: sunrise
+    id: sunrise
+  - platform: time
+    at: 01:00:00
+    id: nightly
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: slider
+      sequence:
+      - service: mqtt.publish
+        data:
+          topic: wallpanel/mywallpanel/command
+          payload: '{{ {''brightness'': states(''input_number.jasnosc_tabletu'') |
+            int } | tojson }}
+
+            '
+    - conditions:
+      - condition: trigger
+        id: sunset_minus_40
+      sequence:
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.jasnosc_tabletu
+        data:
+          value: 1
+    - conditions:
+      - condition: trigger
+        id: sunrise
+      sequence:
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.jasnosc_tabletu
+        data:
+          value: 200
+    - conditions:
+      - condition: trigger
+        id: nightly
+      sequence:
+      - service: mqtt.publish
+        data:
+          topic: wallpanel/mywallpanel/command
+          payload: '{"reload": true}'
+- id: '1780809958305'
+  alias: Bojler - Harmonogram Włączenia (3h PO wschodzie) i Wyłączenia (3h PRZED zachodem)
+  description: Włącza zasilanie gniazdka bojler'a 3 godziny PO wschodzie słońca i
+    całkowicie odcina zasilanie bojler'a 3 godziny PRZED zachodem słońca.
+  triggers:
+  - trigger: sun
+    event: sunrise
+    offset: 03:00:00
+    id: wstan_po_wschodzie
+  - trigger: sun
+    event: sunset
+    offset: -03:00:00
+    id: spij_przed_zachodem
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: wstan_po_wschodzie
+      sequence:
+      - target:
+          entity_id: switch.bojler_140_l_bojler
+        action: switch.turn_on
+      - data:
+          title: Bojler Włączony
+          message: Bojler został włączony o {{ now().strftime('%Y-%m-%d %H:%M:%S')
+            }}
+        action: persistent_notification.create
+    - conditions:
+      - condition: trigger
+        id: spij_przed_zachodem
+      sequence:
+      - target:
+          entity_id: light.laptop_bojler_moc_grzalki_bojlera
+        action: light.turn_off
+      - delay: 00:00:02
+      - target:
+          entity_id: switch.bojler_140_l_bojler
+        action: switch.turn_off
+      - data:
+          title: Bojler Wyłączony
+          message: Bojler został wyłączony o {{ now().strftime('%Y-%m-%d %H:%M:%S')
+            }}
+        action: persistent_notification.create
+  mode: single
+- id: '1780986680648'
+  alias: Bojler Off-Grid – Fundament + Detekcja awaryjnego skoku poboru
+  description: 'Histereza 250-450W, powolny wzrost +30W/5s, szybki spadek -80W. NOWOŚĆ:
+    Wykrywa nagły skok poboru Enea (>1500W) i natychmiast schodzi do min.
+
+    '
+  triggers:
+  - seconds: /3
+    trigger: time_pattern
+  - entity_id: sensor.smgii_smg_ii_average_mains_power
+    trigger: state
+  conditions:
+  - condition: state
+    entity_id: switch.bojler_140_l_bojler
+    state: 'on'
+  - condition: template
+    value_template: '{{ states(''sensor.smgii_smg_ii_average_mains_power'') not in
+      [''unknown'', ''unavailable'', ''none''] }}
+
+      '
+  actions:
+  - variables:
+      bojler_heater_entity: light.laptop_bojler_moc_grzalki_bojlera
+      stable_low_limit_w: 200
+      stable_high_limit_w: 400
+      min_boiler_power_pct: 40
+      max_boiler_power_pct: 62
+      step_inc_watts: 10
+      step_dec_watts: 100
+      increase_delay_seconds: 5
+      brightness_map:
+      - - 40
+        - 9
+      - - 41
+        - 16
+      - - 42
+        - 28
+      - - 43
+        - 73
+      - - 44
+        - 114
+      - - 45
+        - 196
+      - - 46
+        - 267
+      - - 47
+        - 374
+      - - 48
+        - 445
+      - - 49
+        - 567
+      - - 50
+        - 676
+      - - 51
+        - 744
+      - - 52
+        - 845
+      - - 53
+        - 905
+      - - 54
+        - 985
+      - - 55
+        - 1039
+      - - 56
+        - 1099
+      - - 57
+        - 1137
+      - - 58
+        - 1197
+      - - 59
+        - 1250
+      - - 60
+        - 1295
+      - - 61
+        - 1337
+      - - 62
+        - 1367
+      - - 63
+        - 1412
+      - - 64
+        - 1438
+      - - 65
+        - 1475
+      - - 66
+        - 1493
+      - - 67
+        - 1525
+      - - 68
+        - 1572
+      - - 69
+        - 1590
+      - - 70
+        - 1585
+      current_enea_power_w: '{{ states(''sensor.smgii_smg_ii_average_mains_power'')
+        | float(0) }}'
+      previous_enea_power_w: '{{ states(''input_number.bojler_last_enea_power'') |
+        float(0) }}'
+      enea_power_delta: '{{ current_enea_power_w - previous_enea_power_w }}'
+      surge_threshold_watts: 1500
+      current_boiler_watts: "{% if is_state(bojler_heater_entity, 'off') %}\n  {{
+        brightness_map[0][1] }}\n{% else %}\n  {% set b = state_attr(bojler_heater_entity,
+        'brightness') | int(0) %}\n  {% set curr_pct = ((b / 255) * 100) | round(0)
+        | int %}\n  {% set ns = namespace(w=0) %}\n  {% for pair in brightness_map
+        %}\n    {% if pair[0] | int <= curr_pct %}\n      {% set ns.w = pair[1] |
+        float %}\n    {% endif %}\n  {% endfor %}\n  {{ ns.w }}\n{% endif %}\n"
+      current_boiler_power_pct: "{% if is_state(bojler_heater_entity, 'off') %}\n
+        \ {{ min_boiler_power_pct }}\n{% else %}\n  {% set b = state_attr(bojler_heater_entity,
+        'brightness') | int(0) %}\n  {{ ((b / 255) * 100) | round(0) | int }}\n{%
+        endif %}\n"
+      step_increase_pct_low_enea: "{% set cur_w = current_boiler_watts | float %}
+        {% set target_w = cur_w + step_inc_watts %} {% set ns = namespace(found_pct=0)
+        %} {% for pair in brightness_map %}\n  {% if pair[1] | float <= target_w %}\n
+        \   {% set ns.found_pct = pair[0] | int %}\n  {% endif %}\n{% endfor %} {%
+        set cur_pct = current_boiler_power_pct | int %} {{ [ns.found_pct - cur_pct,
+        1] | max }}\n"
+      step_decrease_pct_high_enea: "{% set cur_w = current_boiler_watts | float %}
+        {% set target_w = cur_w - step_dec_watts %} {% set ns = namespace(found_pct=0)
+        %} {% for pair in brightness_map %}\n  {% if pair[1] | float <= target_w %}\n
+        \   {% set ns.found_pct = pair[0] | int %}\n  {% endif %}\n{% endfor %} {%
+        set cur_pct = current_boiler_power_pct | int %} {{ [cur_pct - ns.found_pct,
+        1] | max }}\n"
+      last_increase_ts: '{{ state_attr(''input_datetime.bojler_last_increase'', ''timestamp'')
+        | int(0) }}'
+      now_ts: '{{ now().timestamp() | int }}'
+      can_increase: '{{ (now_ts - last_increase_ts) >= increase_delay_seconds }}'
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ enea_power_delta | float > surge_threshold_watts }}'
+      sequence:
+      - target:
+          entity_id: light.laptop_bojler_moc_grzalki_bojlera
+        data:
+          brightness_pct: 40
+          transition: 1
+        action: light.turn_on
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.bojler_last_increase
+        data:
+          timestamp: '{{ now().timestamp() | int }}'
+    - conditions:
+      - condition: template
+        value_template: '{{ current_enea_power_w | float > stable_high_limit_w }}'
+      sequence:
+      - variables:
+          new_pct: '{% set p = current_boiler_power_pct | int %} {% set d = step_decrease_pct_high_enea
+            | int %} {{ [ [ p - d, max_boiler_power_pct ] | min, min_boiler_power_pct
+            ] | max }}
+
+            '
+      - target:
+          entity_id: light.laptop_bojler_moc_grzalki_bojlera
+        data:
+          brightness_pct: '{{ new_pct }}'
+          transition: 1
+        action: light.turn_on
+    - conditions:
+      - condition: template
+        value_template: '{{ current_enea_power_w | float < stable_low_limit_w and
+          can_increase }}'
+      sequence:
+      - variables:
+          new_pct: '{% set p = current_boiler_power_pct | int %} {% set i = step_increase_pct_low_enea
+            | int %} {{ [ [ p + i, max_boiler_power_pct ] | min, min_boiler_power_pct
+            ] | max }}
+
+            '
+      - target:
+          entity_id: light.laptop_bojler_moc_grzalki_bojlera
+        data:
+          brightness_pct: '{{ new_pct }}'
+          transition: 1
+        action: light.turn_on
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.bojler_last_increase
+        data:
+          timestamp: '{{ now().timestamp() | int }}'
+    default:
+    - delay: 0
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.bojler_last_enea_power
+    data:
+      value: '{{ current_enea_power_w }}'
+  mode: single

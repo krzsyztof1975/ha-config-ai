@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace.dashboard_laptop",
+  "data": {
+    "config": {
+      "views": [
+        {
+          "title": "Home",
+          "sections": [
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "Nowa sekcja"
+                },
+                {
+                  "type": "entities",
+                  "entities": [
+                    {
+                      "entity": "sensor.system_monitor_obciazenie_procesora"
+                    },
+                    {
+                      "entity": "sensor.system_monitor_memory_usage"
+                    },
+                    {
+                      "entity": "sensor.system_monitor_temperatura_procesora"
+                    },
+                    {
+                      "entity": "sensor.system_monitor_bateria"
+                    },
+                    {
+                      "entity": "binary_sensor.system_monitor_ladowanie"
+                    }
+                  ],
+                  "title": "Laptop"
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "Nowa sekcja"
+                },
+                {
+                  "chart_type": "line",
+                  "period": "hour",
+                  "type": "statistics-graph",
+                  "entities": [
+                    "sensor.system_monitor_memory_usage",
+                    "sensor.system_monitor_obciazenie_procesora"
+                  ],
+                  "stat_types": [
+                    "mean",
+                    "min",
+                    "max"
+                  ],
+                  "logarithmic_scale": false,
+                  "hide_legend": false,
+                  "days_to_show": 1
+                }
+              ]
+            }
+          ],
+          "visible": [
+            {
+              "user": "8804d6d3cd3c498aa931f1aebb4a5396"
+            },
+            {
+              "user": "a5dba6e27cad441dba472f5de59d2148"
+            }
+          ],
+          "cards": []
+        }
+      ]
+    }
+  }
+}

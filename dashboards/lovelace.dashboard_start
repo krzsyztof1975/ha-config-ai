@@ -1,0 +1,420 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace.dashboard_start",
+  "data": {
+    "config": {
+      "title": "Inwerter SMG II - TOTAL",
+      "views": [
+        {
+          "title": "Główny",
+          "path": "glowny",
+          "icon": "mdi:home-lightning-bolt",
+          "type": "sections",
+          "max_columns": 4,
+          "sections": [
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "☀️ Stan energii"
+                },
+                {
+                  "type": "markdown",
+                  "content": "{% set pv = states('sensor.smgii_smg_ii_pv_average_power') | float(0) %} {% set dom = states('sensor.smgii_smg_ii_output_active_power') | float(0) %} {% set soc = states('sensor.smgii_smg_ii_battery_state_of_charge') | float(0) %} {% set siec = states('sensor.smgii_smg_ii_average_mains_power') | float(0) %} <div style=\"text-align:center; padding: 14px; border-radius: 18px; background: linear-gradient(145deg, #f6f8fb, #eaf1f8);\">\n  <div style=\"font-size: 28px; font-weight: 700; margin-bottom: 6px; color:#1f2d3d;\">\n    OFFGRID CENTER\n  </div>\n  <div style=\"font-size: 18px; line-height: 1.8; color:#243447;\">\n    <span style=\"color:#f39c12;\"><b>☀️ PV {{ pv | round(0) }} W</b></span> •\n    <span style=\"color:#2980b9;\"><b>🏠 DOM {{ dom | round(0) }} W</b></span> •\n    <span style=\"color:#27ae60;\"><b>🔋 SOC {{ soc | round(0) }}%</b></span> •\n    <span style=\"color:#c0392b;\"><b>⚡ ENEA {{ siec | round(0) }} W</b></span>\n  </div>\n  <div style=\"margin-top:10px; font-size:16px; color:#4a5a6a;\">\n    {% if pv > 50 %}\n      Zasilanie idzie głównie z PV, a sieć jest tylko wsparciem.\n    {% elif pv <= 50 and siec > 0 %}\n      Brak mocy z paneli, inwerter dobiera energię z ENEA.\n    {% elif pv <= 50 and siec <= 0 %}\n      Brak produkcji PV, układ pracuje bez poboru z sieci.\n    {% else %}\n      Układ pracuje normalnie.\n    {% endif %}\n  </div>\n</div>",
+                  "card_size": 4
+                },
+                {
+                  "type": "sensor",
+                  "entity": "sensor.smgii_smg_ii_pv_average_power",
+                  "name": "Produkcja PV",
+                  "graph": "line"
+                },
+                {
+                  "type": "sensor",
+                  "entity": "sensor.smgii_smg_ii_output_active_power",
+                  "name": "Pobór domu",
+                  "graph": "line"
+                },
+                {
+                  "type": "sensor",
+                  "entity": "sensor.smgii_smg_ii_battery_state_of_charge",
+                  "name": "Bateria SOC",
+                  "graph": "line"
+                },
+                {
+                  "type": "sensor",
+                  "entity": "sensor.smgii_smg_ii_average_mains_power",
+                  "name": "Dobór z ENEA",
+                  "graph": "line"
+                },
+                {
+                  "type": "entities",
+                  "title": "Sieć - Licznik Główny Tuya",
+                  "show_header_toggle": false,
+                  "state_color": true,
+                  "entities": [
+                    {
+                      "entity": "switch.glowny_9_ix_2023"
+                    },
+                    {
+                      "entity": "sensor.glowny_9_ix_2023_w"
+                    },
+                    {
+                      "entity": "sensor.glowny_9_ix_2023_volt"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "📊 Energia"
+                },
+                {
+                  "type": "markdown",
+                  "content": "| Okres | Energia | | :--- | ---: | | **Dziś PV** | {{ states('sensor.smgii_produkcja_pv_dzisiaj') | float(0) | round(2) }} kWh | | **Miesiąc PV** | {{ states('sensor.produkcja_pv_miesiac') | float(0) | round(2) }} kWh | | **Rok PV** | {{ states('sensor.produkcja_pv_rok') | float(0) | round(2) }} kWh | | **Suma PV** | {{ states('sensor.licznik_energii_ze_slonca') | float(0) | round(2) }} kWh | | **Z sieci** | {{ states('sensor.licznik_energii_z_sieci') | float(0) | round(2) }} kWh |",
+                  "card_size": 3
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "🔋 Akumulator"
+                },
+                {
+                  "type": "entities",
+                  "title": "Stan baterii",
+                  "entities": [
+                    {
+                      "entity": "sensor.smgii_smg_ii_battery_state_of_charge",
+                      "name": "Poziom SOC"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_battery_average_voltage",
+                      "name": "Napięcie baterii"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_battery_average_current",
+                      "name": "Prąd baterii 1"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_battery_average_current2",
+                      "name": "Prąd baterii 2"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_battery_average_power",
+                      "name": "Moc baterii"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_charging_power",
+                      "name": "Moc ładowania"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_discharging_power",
+                      "name": "Moc rozładowania"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "⚙️ Tryb pracy"
+                },
+                {
+                  "type": "entities",
+                  "entities": [
+                    {
+                      "entity": "sensor.smgii_smg_ii_operation_mode",
+                      "name": "Tryb pracy"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_load_percentage",
+                      "name": "Obciążenie"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_fault",
+                      "name": "Błąd"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_warning",
+                      "name": "Ostrzeżenie"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "Basen"
+                },
+                {
+                  "type": "tile",
+                  "entity": "sensor.szklarnia_temperatura_basenu"
+                }
+              ]
+            }
+          ],
+          "cards": []
+        },
+        {
+          "title": "Sensory",
+          "path": "sensory",
+          "icon": "mdi:chart-line",
+          "type": "sections",
+          "sections": [
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "⚡ Elektryka szczegółowa"
+                },
+                {
+                  "type": "entities",
+                  "title": "Napięcia i częstotliwości",
+                  "entities": [
+                    {
+                      "entity": "sensor.smgii_smg_ii_pv_average_voltage"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_ac_voltage"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_output_effective_voltage"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_battery_average_voltage"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_ac_frequency"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_output_frequency"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_inverter_frequency"
+                    }
+                  ]
+                },
+                {
+                  "type": "entities",
+                  "title": "Natężenia i moce",
+                  "entities": [
+                    {
+                      "entity": "sensor.smgii_smg_ii_pv_average_current"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_battery_average_current"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_battery_average_current2"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_output_effective_current"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_effective_inverter_current"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_charging_power"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_discharging_power"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_battery_average_power"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_pv_charging_average_power"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_inverter_charging_power"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_average_mains_power"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "🛠️ Status i diagnostyka"
+                },
+                {
+                  "type": "entities",
+                  "entities": [
+                    {
+                      "entity": "sensor.smgii_smg_ii_operation_mode"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_operation_mode_id"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_load_percentage"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_inverter_temperature"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_dcdc_temperature"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_fault_code"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_warning_code"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_fault"
+                    },
+                    {
+                      "entity": "sensor.smgii_smg_ii_warning"
+                    },
+                    {
+                      "entity": "update.rekuperator_firmware"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Konfiguracja",
+          "path": "konfiguracja",
+          "icon": "mdi:tune",
+          "type": "sections",
+          "sections": [
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "⚙️ Ustawienia pracy"
+                },
+                {
+                  "type": "entities",
+                  "entities": [
+                    {
+                      "entity": "select.smgii_smg_ii_output_priority"
+                    },
+                    {
+                      "entity": "select.smgii_smg_ii_battery_charging_priority"
+                    },
+                    {
+                      "entity": "number.smgii_smg_ii_maximum_charging_current"
+                    },
+                    {
+                      "entity": "number.smgii_smg_ii_maximum_mains_charging_current"
+                    },
+                    {
+                      "entity": "number.smgii_smg_ii_soc_point_back_to_battery"
+                    },
+                    {
+                      "entity": "number.smgii_smg_ii_soc_point_back_to_utility"
+                    },
+                    {
+                      "entity": "number.smgii_smg_ii_low_dc_cut_off_soc"
+                    },
+                    {
+                      "entity": "select.smgii_smg_ii_battery_type"
+                    },
+                    {
+                      "entity": "select.smgii_smg_ii_output_mode"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "⚡ Napięcia i equalizacja"
+                },
+                {
+                  "type": "entities",
+                  "entities": [
+                    {
+                      "entity": "number.smgii_smg_ii_max_charging_voltage"
+                    },
+                    {
+                      "entity": "number.smgii_smg_ii_floating_charging_voltage"
+                    },
+                    {
+                      "entity": "number.smgii_smg_ii_eq_charging_voltage"
+                    },
+                    {
+                      "entity": "number.smgii_smg_ii_battery_equalization_time"
+                    },
+                    {
+                      "entity": "number.smgii_smg_ii_equalization_timeout_exit"
+                    },
+                    {
+                      "entity": "number.smgii_smg_ii_two_equalization_charging_intervals"
+                    },
+                    {
+                      "entity": "switch.smgii_smg_ii_battery_eq_mode_is_enabled"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "🖥️ LCD i dźwięki"
+                },
+                {
+                  "type": "entities",
+                  "entities": [
+                    {
+                      "entity": "select.smgii_smg_ii_lcd_backlight"
+                    },
+                    {
+                      "entity": "select.smgii_smg_ii_buzzer_mode"
+                    },
+                    {
+                      "entity": "select.smgii_smg_ii_turn_on_mode"
+                    },
+                    {
+                      "entity": "number.smgii_smg_ii_output_voltage"
+                    },
+                    {
+                      "entity": "number.smgii_smg_ii_output_frequency_setting"
+                    },
+                    {
+                      "entity": "select.smgii_smg_ii_input_voltage_range"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

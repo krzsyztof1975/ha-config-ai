@@ -1,0 +1,847 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace.dashboard_brama",
+  "data": {
+    "config": {
+      "title": "Dom",
+      "kiosk_mode": {
+        "hide_header": true,
+        "hide_sidebar": true,
+        "hide_menubutton": true,
+        "hide_overflow": true
+      },
+      "views": [
+        {
+          "title": "Pogoda",
+          "path": "pogoda",
+          "type": "panel",
+          "cards": [
+            {
+              "type": "vertical-stack",
+              "cards": [
+                {
+                  "type": "custom:mod-card",
+                  "card_mod": {
+                    "style": "ha-card {\n  background: linear-gradient(135deg, #f8fbff 0%, #eef6ff 100%);\n  border: 1px solid #d9e7f5;\n  border-radius: 26px;\n  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.10);\n  padding: 10px 14px 14px 14px;\n  margin: 8px;\n}\n"
+                  },
+                  "card": {
+                    "type": "vertical-stack",
+                    "cards": [
+                      {
+                        "type": "custom:button-card",
+                        "name": "[[[\n  return new Date().toLocaleDateString('pl-PL', {\n    weekday: 'long',\n    day: '2-digit',\n    month: '2-digit',\n    year: 'numeric'\n  });\n]]]\n",
+                        "label": "[[[\n  let imieniny = states['sensor.imieniny_dzis'];\n  let wartosc = (imieniny && imieniny.state && imieniny.state != 'unknown' && imieniny.state != 'unavailable' && imieniny.state != 'Brak danych')\n    ? imieniny.state\n    : 'Dobiesław, Wiktor, Maciej';\n  return \"IMIENINY · \" + wartosc;\n]]]\n",
+                        "show_icon": false,
+                        "show_state": false,
+                        "show_label": true,
+                        "tap_action": {
+                          "action": "none"
+                        },
+                        "hold_action": {
+                          "action": "none"
+                        },
+                        "styles": {
+                          "card": [
+                            {
+                              "background": "transparent"
+                            },
+                            {
+                              "box-shadow": "none"
+                            },
+                            {
+                              "border": "none"
+                            },
+                            {
+                              "padding": "4px 4px 10px 4px"
+                            }
+                          ],
+                          "grid": [
+                            {
+                              "grid-template-areas": "\"n\" \"l\""
+                            },
+                            {
+                              "grid-template-columns": "1fr"
+                            }
+                          ],
+                          "name": [
+                            {
+                              "justify-self": "center"
+                            },
+                            {
+                              "text-align": "center"
+                            },
+                            {
+                              "font-size": "22px"
+                            },
+                            {
+                              "font-weight": 800
+                            },
+                            {
+                              "color": "#2563eb"
+                            }
+                          ],
+                          "label": [
+                            {
+                              "justify-self": "center"
+                            },
+                            {
+                              "text-align": "center"
+                            },
+                            {
+                              "font-size": "24px"
+                            },
+                            {
+                              "font-weight": 800
+                            },
+                            {
+                              "color": "#0f766e"
+                            },
+                            {
+                              "letter-spacing": "0.4px"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "type": "grid",
+                        "columns": 3,
+                        "square": false,
+                        "cards": [
+                          {
+                            "type": "custom:button-card",
+                            "entity": "sensor.esp32_pogoda_temperatura_zewnetrzna",
+                            "name": "TERAZ",
+                            "show_icon": true,
+                            "icon": "mdi:thermometer",
+                            "show_label": true,
+                            "label": "[[[ return Number(entity.state).toFixed(1) + \"°C\"; ]]]\n",
+                            "tap_action": {
+                              "action": "none"
+                            },
+                            "hold_action": {
+                              "action": "none"
+                            },
+                            "styles": {
+                              "card": [
+                                {
+                                  "min-height": "200px"
+                                },
+                                {
+                                  "background": "linear-gradient(160deg, #fff7ed 0%, #fee2e2 100%)"
+                                },
+                                {
+                                  "border-radius": "28px"
+                                },
+                                {
+                                  "padding": "18px 14px"
+                                },
+                                {
+                                  "border": "1px solid #fecaca"
+                                },
+                                {
+                                  "box-shadow": "0 10px 24px rgba(220, 38, 38, 0.10)"
+                                },
+                                {
+                                  "grid-column": "span 2"
+                                }
+                              ],
+                              "grid": [
+                                {
+                                  "grid-template-areas": "\"i n\" \"l l\""
+                                },
+                                {
+                                  "grid-template-columns": "min-content 1fr"
+                                },
+                                {
+                                  "grid-template-rows": "min-content 1fr"
+                                }
+                              ],
+                              "img_cell": [
+                                {
+                                  "justify-self": "start"
+                                },
+                                {
+                                  "align-self": "center"
+                                },
+                                {
+                                  "width": "48px"
+                                },
+                                {
+                                  "height": "48px"
+                                },
+                                {
+                                  "background": "#fee2e2"
+                                },
+                                {
+                                  "border-radius": "50%"
+                                }
+                              ],
+                              "icon": [
+                                {
+                                  "color": "#dc2626"
+                                },
+                                {
+                                  "width": "28px"
+                                }
+                              ],
+                              "name": [
+                                {
+                                  "justify-self": "start"
+                                },
+                                {
+                                  "align-self": "center"
+                                },
+                                {
+                                  "font-size": "22px"
+                                },
+                                {
+                                  "font-weight": 800
+                                },
+                                {
+                                  "color": "#7f1d1d"
+                                },
+                                {
+                                  "padding-left": "8px"
+                                }
+                              ],
+                              "label": [
+                                {
+                                  "align-self": "center"
+                                },
+                                {
+                                  "justify-self": "center"
+                                },
+                                {
+                                  "font-size": "80px"
+                                },
+                                {
+                                  "font-weight": 900
+                                },
+                                {
+                                  "color": "#dc2626"
+                                },
+                                {
+                                  "line-height": 1
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "custom:button-card",
+                            "entity": "sensor.temperatura_zewnetrzna_min_24h",
+                            "name": "MIN 24H",
+                            "icon": "mdi:arrow-down-thin",
+                            "show_icon": true,
+                            "show_label": true,
+                            "label": "[[[\n  const val = Number(entity.state).toFixed(1) + \"°C\";\n  const czas = states['sensor.temperatura_zewnetrzna_min_czas_24h']\n    ? new Date(states['sensor.temperatura_zewnetrzna_min_czas_24h'].state).toLocaleTimeString('pl-PL', {hour: '2-digit', minute: '2-digit'})\n    : '--:--';\n  return val + \"<br><span style='font-size:14px; opacity:.85;'>godz. \" + czas + \"</span>\";\n]]]\n",
+                            "styles": {
+                              "card": [
+                                {
+                                  "min-height": "200px"
+                                },
+                                {
+                                  "background": "linear-gradient(180deg, #f0f9ff 0%, #e0f2fe 100%)"
+                                },
+                                {
+                                  "border-radius": "24px"
+                                },
+                                {
+                                  "padding": "14px 8px"
+                                },
+                                {
+                                  "border": "1px solid #bae6fd"
+                                },
+                                {
+                                  "box-shadow": "0 6px 16px rgba(14, 165, 233, 0.10)"
+                                }
+                              ],
+                              "grid": [
+                                {
+                                  "grid-template-areas": "\"i n\" \"l l\""
+                                },
+                                {
+                                  "grid-template-columns": "min-content 1fr"
+                                }
+                              ],
+                              "img_cell": [
+                                {
+                                  "width": "42px"
+                                },
+                                {
+                                  "height": "42px"
+                                },
+                                {
+                                  "background": "#e0f2fe"
+                                },
+                                {
+                                  "border-radius": "50%"
+                                }
+                              ],
+                              "icon": [
+                                {
+                                  "color": "#0284c7"
+                                },
+                                {
+                                  "width": "24px"
+                                }
+                              ],
+                              "name": [
+                                {
+                                  "justify-self": "start"
+                                },
+                                {
+                                  "align-self": "center"
+                                },
+                                {
+                                  "font-size": "16px"
+                                },
+                                {
+                                  "font-weight": 800
+                                },
+                                {
+                                  "color": "#075985"
+                                },
+                                {
+                                  "padding-left": "6px"
+                                }
+                              ],
+                              "label": [
+                                {
+                                  "text-align": "center"
+                                },
+                                {
+                                  "font-size": "36px"
+                                },
+                                {
+                                  "font-weight": 900
+                                },
+                                {
+                                  "color": "#0ea5e9"
+                                },
+                                {
+                                  "line-height": 1.1
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "custom:button-card",
+                            "entity": "sensor.temperatura_zewnetrzna_max_24h",
+                            "name": "MAX 24H",
+                            "icon": "mdi:arrow-up-thin",
+                            "show_icon": true,
+                            "show_label": true,
+                            "label": "[[[\n  const val = Number(entity.state).toFixed(1) + \"°C\";\n  const czas = states['sensor.temperatura_zewnetrzna_max_czas_24h']\n    ? new Date(states['sensor.temperatura_zewnetrzna_max_czas_24h'].state).toLocaleTimeString('pl-PL', {hour: '2-digit', minute: '2-digit'})\n    : '--:--';\n  return val + \"<br><span style='font-size:14px; opacity:.85;'>godz. \" + czas + \"</span>\";\n]]]\n",
+                            "styles": {
+                              "card": [
+                                {
+                                  "min-height": "200px"
+                                },
+                                {
+                                  "background": "linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%)"
+                                },
+                                {
+                                  "border-radius": "24px"
+                                },
+                                {
+                                  "padding": "14px 8px"
+                                },
+                                {
+                                  "border": "1px solid #fed7aa"
+                                },
+                                {
+                                  "box-shadow": "0 6px 16px rgba(249, 115, 22, 0.10)"
+                                }
+                              ],
+                              "grid": [
+                                {
+                                  "grid-template-areas": "\"i n\" \"l l\""
+                                },
+                                {
+                                  "grid-template-columns": "min-content 1fr"
+                                }
+                              ],
+                              "img_cell": [
+                                {
+                                  "width": "42px"
+                                },
+                                {
+                                  "height": "42px"
+                                },
+                                {
+                                  "background": "#ffedd5"
+                                },
+                                {
+                                  "border-radius": "50%"
+                                }
+                              ],
+                              "icon": [
+                                {
+                                  "color": "#ea580c"
+                                },
+                                {
+                                  "width": "24px"
+                                }
+                              ],
+                              "name": [
+                                {
+                                  "justify-self": "start"
+                                },
+                                {
+                                  "align-self": "center"
+                                },
+                                {
+                                  "font-size": "16px"
+                                },
+                                {
+                                  "font-weight": 800
+                                },
+                                {
+                                  "color": "#9a3412"
+                                },
+                                {
+                                  "padding-left": "6px"
+                                }
+                              ],
+                              "label": [
+                                {
+                                  "text-align": "center"
+                                },
+                                {
+                                  "font-size": "36px"
+                                },
+                                {
+                                  "font-weight": 900
+                                },
+                                {
+                                  "color": "#f97316"
+                                },
+                                {
+                                  "line-height": 1.1
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "grid",
+                        "columns": 4,
+                        "square": false,
+                        "cards": [
+                          {
+                            "type": "custom:button-card",
+                            "entity": "sensor.pogoda_esp32_wilgotnosc_zewnetrzna",
+                            "name": "WILGOTNOŚĆ",
+                            "icon": "mdi:water-percent",
+                            "show_icon": true,
+                            "show_label": true,
+                            "label": "[[[ return Number(entity.state).toFixed(0) + \"%\"; ]]]\n",
+                            "styles": {
+                              "card": [
+                                {
+                                  "min-height": "110px"
+                                },
+                                {
+                                  "background": "linear-gradient(180deg, #f0fdfa 0%, #ccfbf1 100%)"
+                                },
+                                {
+                                  "border-radius": "22px"
+                                },
+                                {
+                                  "padding": "12px 8px"
+                                },
+                                {
+                                  "border": "1px solid #99f6e4"
+                                },
+                                {
+                                  "box-shadow": "0 6px 16px rgba(20, 184, 166, 0.10)"
+                                }
+                              ],
+                              "grid": [
+                                {
+                                  "grid-template-areas": "\"i n\" \"l l\""
+                                },
+                                {
+                                  "grid-template-columns": "min-content 1fr"
+                                }
+                              ],
+                              "img_cell": [
+                                {
+                                  "width": "38px"
+                                },
+                                {
+                                  "height": "38px"
+                                },
+                                {
+                                  "background": "#ccfbf1"
+                                },
+                                {
+                                  "border-radius": "50%"
+                                }
+                              ],
+                              "icon": [
+                                {
+                                  "color": "#0f766e"
+                                },
+                                {
+                                  "width": "44px"
+                                }
+                              ],
+                              "name": [
+                                {
+                                  "justify-self": "start"
+                                },
+                                {
+                                  "align-self": "center"
+                                },
+                                {
+                                  "font-size": "22px"
+                                },
+                                {
+                                  "font-weight": 800
+                                },
+                                {
+                                  "color": "#0f766e"
+                                },
+                                {
+                                  "padding-left": "6px"
+                                }
+                              ],
+                              "label": [
+                                {
+                                  "text-align": "center"
+                                },
+                                {
+                                  "font-size": "36px"
+                                },
+                                {
+                                  "font-weight": 900
+                                },
+                                {
+                                  "color": "#14b8a6"
+                                },
+                                {
+                                  "line-height": 1
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "custom:button-card",
+                            "entity": "sensor.pogoda_esp32_cisnienie",
+                            "name": "CIŚNIENIE",
+                            "icon": "mdi:gauge",
+                            "show_icon": true,
+                            "show_label": true,
+                            "label": "[[[ return Number(entity.state).toFixed(0) + \" hPa\"; ]]]\n",
+                            "styles": {
+                              "card": [
+                                {
+                                  "min-height": "110px"
+                                },
+                                {
+                                  "background": "linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%)"
+                                },
+                                {
+                                  "border-radius": "22px"
+                                },
+                                {
+                                  "padding": "12px 8px"
+                                },
+                                {
+                                  "border": "1px solid #bbf7d0"
+                                },
+                                {
+                                  "box-shadow": "0 6px 16px rgba(34, 197, 94, 0.10)"
+                                }
+                              ],
+                              "grid": [
+                                {
+                                  "grid-template-areas": "\"i n\" \"l l\""
+                                },
+                                {
+                                  "grid-template-columns": "min-content 1fr"
+                                }
+                              ],
+                              "img_cell": [
+                                {
+                                  "width": "38px"
+                                },
+                                {
+                                  "height": "38px"
+                                },
+                                {
+                                  "background": "#dcfce7"
+                                },
+                                {
+                                  "border-radius": "50%"
+                                }
+                              ],
+                              "icon": [
+                                {
+                                  "color": "#166534"
+                                },
+                                {
+                                  "width": "44px"
+                                }
+                              ],
+                              "name": [
+                                {
+                                  "justify-self": "start"
+                                },
+                                {
+                                  "align-self": "center"
+                                },
+                                {
+                                  "font-size": "22px"
+                                },
+                                {
+                                  "font-weight": 800
+                                },
+                                {
+                                  "color": "#166534"
+                                },
+                                {
+                                  "padding-left": "6px"
+                                }
+                              ],
+                              "label": [
+                                {
+                                  "text-align": "center"
+                                },
+                                {
+                                  "font-size": "36px"
+                                },
+                                {
+                                  "font-weight": 900
+                                },
+                                {
+                                  "color": "#22c55e"
+                                },
+                                {
+                                  "line-height": 1
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "custom:button-card",
+                            "entity": "sensor.bojler_temperatura_bojlera",
+                            "name": "BOJLER",
+                            "icon": "fas:faucet-drip",
+                            "show_icon": true,
+                            "show_label": true,
+                            "label": "[[[\n  const temp = Number(entity.state).toFixed(1);\n  let kolor = '#3b82f6';\n  if (temp >= 50) kolor = '#ef4444';\n  else if (temp >= 42) kolor = '#f59e0b';\n\n  const trendState = states['sensor.bojler_trend_30min']?.state || 'stabilny';\n  let trend = '';\n  let trendColor = '#6b7280';\n\n  if (trendState === 'rosnie') {\n    trend = '⤴️';\n    trendColor = '#ef4444';\n  } else if (trendState === 'spada') {\n    trend = '⤵️';\n    trendColor = '#3b82f6';\n  } else {\n    trend = '➡️';\n    trendColor = '#6b7280';\n  }\n\n  return `<div style=\"display: flex; align-items: baseline; justify-content: center; gap: 4px;\">\n    <span style=\"font-size:36px; font-weight:900; color:${kolor};\">${temp}°C</span>\n    <span style=\"font-size:20px; font-weight:700; color:${trendColor};\">${trend}</span>\n  </div>`;\n]]]\n",
+                            "tap_action": {
+                              "action": "more-info"
+                            },
+                            "styles": {
+                              "card": [
+                                {
+                                  "min-height": "110px"
+                                },
+                                {
+                                  "background": "linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)"
+                                },
+                                {
+                                  "border-radius": "22px"
+                                },
+                                {
+                                  "border": "1px solid #bfdbfe"
+                                },
+                                {
+                                  "padding": "12px 8px"
+                                },
+                                {
+                                  "box-shadow": "0 6px 16px rgba(59,130,246,0.15)"
+                                }
+                              ],
+                              "grid": [
+                                {
+                                  "grid-template-areas": "\"i n\" \"l l\""
+                                },
+                                {
+                                  "grid-template-columns": "min-content 1fr"
+                                }
+                              ],
+                              "img_cell": [
+                                {
+                                  "width": "38px"
+                                },
+                                {
+                                  "height": "38px"
+                                },
+                                {
+                                  "background": "#dbeafe"
+                                },
+                                {
+                                  "border-radius": "50%"
+                                }
+                              ],
+                              "icon": [
+                                {
+                                  "color": "#2563eb"
+                                },
+                                {
+                                  "width": "44px"
+                                }
+                              ],
+                              "name": [
+                                {
+                                  "justify-self": "start"
+                                },
+                                {
+                                  "align-self": "center"
+                                },
+                                {
+                                  "font-size": "22px"
+                                },
+                                {
+                                  "font-weight": 800
+                                },
+                                {
+                                  "color": "#1e3a8a"
+                                },
+                                {
+                                  "padding-left": "6px"
+                                }
+                              ],
+                              "label": [
+                                {
+                                  "justify-self": "center"
+                                },
+                                {
+                                  "text-align": "center"
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "custom:button-card",
+                            "entity": "sensor.szklarnia_temperatura_basenu",
+                            "name": "BASEN",
+                            "icon": "mdi:pool",
+                            "show_icon": true,
+                            "show_label": true,
+                            "label": "[[[ return Number(entity.state).toFixed(1) + \"°C\"; ]]]\n",
+                            "tap_action": {
+                              "action": "more-info"
+                            },
+                            "styles": {
+                              "card": [
+                                {
+                                  "min-height": "110px"
+                                },
+                                {
+                                  "background": "linear-gradient(135deg, #f0f9ff 0%, #dbeafe 100%)"
+                                },
+                                {
+                                  "border-radius": "22px"
+                                },
+                                {
+                                  "border": "1px solid #bfdbfe"
+                                },
+                                {
+                                  "padding": "12px 8px"
+                                },
+                                {
+                                  "box-shadow": "0 6px 16px rgba(59,130,246,0.15)"
+                                }
+                              ],
+                              "grid": [
+                                {
+                                  "grid-template-areas": "\"i n\" \"l l\""
+                                },
+                                {
+                                  "grid-template-columns": "min-content 1fr"
+                                }
+                              ],
+                              "img_cell": [
+                                {
+                                  "width": "38px"
+                                },
+                                {
+                                  "height": "38px"
+                                },
+                                {
+                                  "background": "#dbeafe"
+                                },
+                                {
+                                  "border-radius": "50%"
+                                }
+                              ],
+                              "icon": [
+                                {
+                                  "color": "#2563eb"
+                                },
+                                {
+                                  "width": "44px"
+                                }
+                              ],
+                              "name": [
+                                {
+                                  "justify-self": "start"
+                                },
+                                {
+                                  "align-self": "center"
+                                },
+                                {
+                                  "font-size": "22px"
+                                },
+                                {
+                                  "font-weight": 800
+                                },
+                                {
+                                  "color": "#1e3a8a"
+                                },
+                                {
+                                  "padding-left": "6px"
+                                }
+                              ],
+                              "label": [
+                                {
+                                  "justify-self": "center"
+                                },
+                                {
+                                  "text-align": "center"
+                                },
+                                {
+                                  "font-size": "36px"
+                                },
+                                {
+                                  "font-weight": 900
+                                },
+                                {
+                                  "color": "#2563eb"
+                                },
+                                {
+                                  "line-height": 1
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "weather-forecast",
+                        "entity": "weather.forecast_home",
+                        "show_current": false,
+                        "show_forecast": true,
+                        "forecast_type": "daily",
+                        "card_mod": {
+                          "style": "ha-card {\n  margin-top: 8px;\n  border-radius: 22px;\n  border: 1px solid #d9e7f5;\n  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);\n  background: linear-gradient(180deg, #fcfeff 0%, #f6fbff 100%);\n  padding: 4px 8px 2px 8px;\n}\n.header {\n  display: none;\n}\n.content {\n  padding-top: 2px !important;\n}\n.forecast {\n  padding-top: 0 !important;\n}\n"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

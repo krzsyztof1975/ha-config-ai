@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace_resources",
+  "data": {
+    "items": [
+      {
+        "id": "d7368cea7f57499e9590598c91d2b036",
+        "url": "/hacsfiles/button-card/button-card.js?hacstag=146194325701",
+        "type": "module"
+      },
+      {
+        "id": "b837af73dca8419cbdf0db1b0bf7e0fe",
+        "url": "/hacsfiles/mini-graph-card/mini-graph-card-bundle.js?hacstag=1512800620130",
+        "type": "module"
+      },
+      {
+        "id": "56df4ee26556447e82fb0974cb93eb39",
+        "url": "/hacsfiles/lovelace-layout-card/layout-card.js?hacstag=156434866247",
+        "type": "module"
+      },
+      {
+        "id": "98f918a9521a41a69a9a58baa14054db",
+        "url": "/hacsfiles/lovelace-card-mod/card-mod.js?hacstag=190927524421",
+        "type": "module"
+      },
+      {
+        "id": "f4afcf03ebcb443dbbb40e6287a0c204",
+        "url": "/hacsfiles/lovelace-mushroom/mushroom.js?hacstag=444350375511",
+        "type": "module"
+      },
+      {
+        "id": "6e5a0c1628644861803f955ab5ebeb14",
+        "url": "/hacsfiles/kiosk-mode/kiosk-mode.js?hacstag=4973191281401",
+        "type": "module"
+      }
+    ]
+  }
+}

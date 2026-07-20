@@ -1,0 +1,131 @@
+esphome:
+  name: bojler
+  friendly_name: Bojler
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: arduino
+
+# --- WYJŚCIE PWM DLA KONWERTERA ---
+output:
+  - platform: ledc
+    pin: GPIO5
+    id: bojler_pwm_out
+    frequency: 1000Hz
+
+light:
+  # --- DIODA STATUSU RGB ---
+  - platform: neopixelbus
+    type: RGB        
+    variant: WS2812
+    pin: GPIO48      
+    num_leds: 1
+    name: "Dioda Statusu Bojlera"
+    id: led_rgb
+    restore_mode: ALWAYS_OFF
+    default_transition_length: 0.5s 
+
+  # --- SUWAK MOCY GRZAŁKI Z WYŁĄCZONĄ GAMMĄ ---
+  - platform: monochromatic
+    name: "Moc Grzałki Bojlera"
+    id: moc_grzalki
+    output: bojler_pwm_out
+    default_transition_length: 1s
+    gamma_correct: 0
+
+logger:
+
+api:
+  encryption:
+    key: "8ZTcvSiDPCwk3CBoMtMPGZJoM8+mhaObT4iP82B+QxI="
+
+ota:
+  - platform: esphome
+    password: "[MASKOWANE_HASLO]"
+
+wifi:
+  ssid: "[MASKOWANE_WIFI]"
+  password: "[MASKOWANE_HASLO]"
+  manual_ip:
+    static_ip: [MASKOWANE_IP]
+    gateway: [MASKOWANE_IP]
+    subnet: [MASKOWANE_IP]
+    dns1: [MASKOWANE_IP]
+  ap:
+    ssid: "[MASKOWANE_WIFI]"
+
+captive_portal:
+
+one_wire:
+  - platform: gpio
+    pin: 
+      number: GPIO1
+      mode:
+        input: true
+        pullup: true 
+
+sensor:
+  - platform: dallas_temp
+    address: 0xa3000000764d5128
+    name: "Temperatura Bojlera"
+    id: temp_raw
+    update_interval: 15s 
+    accuracy_decimals: 1
+    unit_of_measurement: "°C"
+    device_class: "temperature"
+    state_class: "measurement"
+    filters:
+      - median:
+          window_size: 7
+          send_every: 4
+      - sliding_window_moving_average:
+          window_size: 10
+          send_every: 1
+    on_value:
+      then:
+        - if:
+            condition:
+              lambda: 'return x >= 50.0;'
+            then:
+              - light.turn_on:
+                  id: led_rgb
+                  brightness: 80%
+                  red: 100%
+                  green: 0%
+                  blue: 0%
+            else:
+              - if:
+                  condition:
+                    lambda: 'return x >= 42.0;'
+                  then:
+                    - light.turn_on:
+                        id: led_rgb
+                        brightness: 80%
+                        red: 100%
+                        green: 80%
+                        blue: 0%
+                  else:
+                    - light.turn_on:
+                        id: led_rgb
+                        brightness: 80%
+                        red: 0%
+                        green: 0%
+                        blue: 100%
+
+  # Sensor trendu (zmiana temperatury między odczytami)
+  - platform: copy
+    source_id: temp_raw
+    name: "Bojler Trend"
+    id: bojler_trend
+    accuracy_decimals: 2
+    unit_of_measurement: "°C/odczyt"
+    device_class: "temperature"
+    state_class: "measurement"
+    filters:
+      - delta: 0.1
+      - lambda: |-
+          static float last_val = 0;
+          float diff = x - last_val;
+          last_val = x;
+          return diff;

@@ -1,0 +1,50 @@
+esphome:
+  name: szklarnia
+  friendly_name: Szklarnia
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+    advanced:
+      minimum_chip_revision: "3.1"
+      sram1_as_iram: true
+
+logger:
+
+api:
+  encryption:
+    key: "YdjtdBoYmOXieRX/ju74JfNM9iU4nRmj4ReqGeAaq0w="
+
+ota:
+  - platform: esphome
+    password: "[MASKOWANE_HASLO]"
+
+wifi:
+  ssid: "[MASKOWANE_WIFI]"
+  password: "[MASKOWANE_HASLO]"
+  manual_ip:
+    static_ip: [MASKOWANE_IP]
+    gateway: [MASKOWANE_IP]
+    subnet: [MASKOWANE_IP]
+    dns1: [MASKOWANE_IP]
+  ap:
+    ssid: "[MASKOWANE_WIFI]"
+    password: "[MASKOWANE_HASLO]"
+
+captive_portal:
+
+# Magistrala 1-Wire z Twoim czujnikiem na GPIO21
+one_wire:
+  - platform: gpio
+    pin: GPIO21
+
+sensor:
+  - platform: dallas_temp
+    address: 0xcb0624b020963b28
+    name: "Temperatura Basenu"
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    device_class: temperature
+    state_class: measurement
+    update_interval: 60s

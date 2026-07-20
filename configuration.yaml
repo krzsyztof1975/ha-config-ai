@@ -1,0 +1,252 @@
+# =========================================================
+# HOME ASSISTANT
+# =========================================================
+
+default_config:
+
+
+# =========================================================
+# PLIKI
+# =========================================================
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+
+# =========================================================
+# LICZNIKI ENERGII
+# =========================================================
+
+utility_meter:
+
+  produkcja_pv_miesiac:
+    source: sensor.licznik_energii_ze_slonca
+    name: "Produkcja PV - miesiąc"
+    cycle: monthly
+
+  produkcja_pv_rok:
+    source: sensor.licznik_energii_ze_slonca
+    name: "Produkcja PV - rok"
+    cycle: yearly
+
+
+# =========================================================
+# SENSORY
+# =========================================================
+
+sensor:
+
+  # =======================================================
+  # IMIENINY
+  # =======================================================
+
+  - platform: rest
+    resource: "https://nameday.abalin.net/api/V2/today?timezone=Europe/Warsaw"
+
+    name: imieniny_api
+
+    value_template: >
+      {% if value_json is defined and value_json.data is defined %}
+        {{ value_json.data.pl }}
+      {% else %}
+        Brak danych
+      {% endif %}
+
+    scan_interval: 3600
+
+
+  # =======================================================
+  # TEMPERATURA ZEWNĘTRZNA
+  # =======================================================
+
+  - platform: statistics
+    name: "Temperatura zewnętrzna min 24h"
+
+    entity_id: sensor.esp32_pogoda_temperatura_zewnetrzna
+
+    state_characteristic: value_min
+
+    max_age:
+      hours: 24
+
+    sampling_size: 8000
+
+
+  - platform: statistics
+    name: "Temperatura zewnętrzna max 24h"
+
+    entity_id: sensor.esp32_pogoda_temperatura_zewnetrzna
+
+    state_characteristic: value_max
+
+    max_age:
+      hours: 24
+
+    sampling_size: 8000
+
+
+  - platform: statistics
+    name: "Temperatura zewnętrzna min czas 24h"
+
+    entity_id: sensor.esp32_pogoda_temperatura_zewnetrzna
+
+    state_characteristic: datetime_value_min
+
+    max_age:
+      hours: 24
+
+    sampling_size: 8000
+
+
+  - platform: statistics
+    name: "Temperatura zewnętrzna max czas 24h"
+
+    entity_id: sensor.esp32_pogoda_temperatura_zewnetrzna
+
+    state_characteristic: datetime_value_max
+
+    max_age:
+      hours: 24
+
+    sampling_size: 8000
+
+
+  # =======================================================
+  # TREND CIŚNIENIA
+  # =======================================================
+
+  - platform: derivative
+    name: "Ciśnienie trend 3h"
+
+    source: sensor.pogoda_esp32_cisnienie
+
+    unit_time: h
+    time_window: "03:00:00"
+
+    round: 2
+
+
+
+# =========================================================
+# TEMPLATE
+# =========================================================
+
+template:
+
+
+  # =======================================================
+  # TEMPLATE SENSORS
+  # =======================================================
+
+  - sensor:
+
+      # IMIENINY
+      - name: "Imieniny dzis"
+
+        icon: mdi:calendar-heart
+
+        state: >-
+          {% set v = states('sensor.imieniny_api') %}
+
+          {% if v not in ['unknown', 'unavailable', '', 'none', 'None'] %}
+            {{ v }}
+          {% else %}
+            Brak danych
+          {% endif %}
+
+
+      # TREND CIŚNIENIA
+      - name: "Ciśnienie trend opis"
+
+        icon: mdi:gauge
+
+        state: >-
+          {% set v = states('sensor.cisnienie_trend_3h') | float(0) %}
+
+          {% if v > 1 %}
+            rośnie
+          {% elif v < -1 %}
+            spada
+          {% else %}
+            stabilne
+          {% endif %}
+
+
+      # NADWYŻKA PV
+      - name: "Aktualna Nadwyżka PV"
+
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+
+        icon: mdi:solar-power
+
+        state: >
+          {% set pv = states('sensor.smgii_pv_average_power') | float(0) %}
+          {% set dom = states('sensor.smgii_output_active_power') | float(0) %}
+
+          {{ (pv - dom) | round(0) }}
+
+
+
+  # =======================================================
+  # REALTIME TREND BOJLERA
+  # =======================================================
+
+  - trigger:
+
+      - platform: state
+        entity_id: sensor.bojler_temperatura_bojlera
+
+    sensor:
+
+      - name: "Bojler trend"
+
+        icon: mdi:trending-up
+
+        state: >
+          {% set now = trigger.to_state.state | float(0) %}
+          {% set old = trigger.from_state.state | float(0) %}
+
+          {% set diff = now - old %}
+
+          {% if diff > 0 %}
+            rosnie
+          {% elif diff < 0 %}
+            spada
+          {% else %}
+            stabilny
+          {% endif %}
+
+        attributes:
+
+          zmiana: >
+            {% set now = trigger.to_state.state | float(0) %}
+            {% set old = trigger.from_state.state | float(0) %}
+
+            {{ (now - old) | round(2) }}
+
+
+
+  # =======================================================
+  # WEATHER
+  # =======================================================
+
+  - weather:
+
+      - name: "Pogoda Dom"
+
+        unique_id: pogoda_dom
+
+        condition_template: >
+          {{ states('weather.home') }}
+
+        temperature_template: >
+          {{ states('sensor.esp32_pogoda_temperatura_zewnetrzna') | float(0) }}
+
+        humidity_template: >
+          {{ states('sensor.pogoda_esp32_wilgotnosc_zewnetrzna') | float(0) }}
+
+        pressure_template: >
+          {{ states('sensor.pogoda_esp32_cisnienie') | float(0) }}
